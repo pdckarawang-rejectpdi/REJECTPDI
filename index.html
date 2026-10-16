@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Reject PDI System - Glass Inspection</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- html5-qrcode CDN untuk Barcode / QR Code Scanner Kamera HP -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* ZETTBOS DARK MODE & GLASSMORPHISM THEME */
+    :root {
+      --bg-main: #0b0f19;
+      --card-bg: rgba(21, 27, 38, 0.85);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --neon-green: #00ffaa;
+      --neon-green-glow: rgba(0, 255, 170, 0.25);
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: #f0f6fc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .btn-neon {
+      background-color: var(--neon-green);
+      color: #0b0f19;
+      font-weight: 700;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 0 12px var(--neon-green-glow);
+    }
+
+    .btn-neon:hover {
+      background-color: #00e699;
+      box-shadow: 0 0 20px rgba(0, 255, 170, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .input-dark {
+      background-color: #1a2232;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      transition: all 0.2s ease;
+    }
+
+    .input-dark:focus {
+      outline: none;
+      border-color: var(--neon-green);
+      box-shadow: 0 0 8px var(--neon-green-glow);
+    }
+
+    .input-dark:disabled {
+      background-color: #121824;
+      color: #8b949e;
+      border-color: rgba(255, 255, 255, 0.05);
+      cursor: not-allowed;
+    }
+
+    .badge-repair {
+      background-color: rgba(234, 179, 8, 0.15);
+      color: #fde047;
+      border: 1px solid rgba(234, 179, 8, 0.3);
+    }
+
+    .badge-ganti {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Print View Styling */
+    @media print {
+      body { background-color: #ffffff !important; color: #000000 !important; }
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      .glass-card { background: none !important; border: 1px solid #ccc !important; box-shadow: none !important; color: #000 !important; }
+      table { width: 100% !important; border-collapse: collapse !important; }
+      th, td { border: 1px solid #333 !important; padding: 5px !important; color: #000 !important; font-size: 9pt !important; }
+    }
+
+    .print-only { display: none; }
+  </style>
+</head>
+<body class="p-3 md:p-6">
+
+  <!-- LAYAR LOADING HITAM (PRELOADER SCREEN WITH ANIMATED PROGRESS BAR) -->
+  <div id="preloader" class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#070a12] transition-opacity duration-500">
+    <div class="text-center max-w-xs w-full px-6 space-y-6">
+      <!-- Logo Branding JKIND -->
+      <div class="inline-flex items-center justify-center px-8 py-3 rounded-2xl bg-teal-500/10 border border-teal-500/30 shadow-[0_0_25px_rgba(0,255,170,0.2)] animate-pulse">
+        <span class="text-3xl font-black italic tracking-widest text-emerald-400 drop-shadow-[0_0_12px_rgba(0,255,170,0.5)]">JKIND</span>
+      </div>
+      
+      <div>
+        <h2 class="text-xl font-bold text-white tracking-wider">REJECT PDI SYSTEM</h2>
+        <p id="preloaderStatusText" class="text-xs text-gray-400 mt-1 font-mono">Memuat Sistem Inspection...</p>
+      </div>
+
+      <!-- Animated Progress Bar -->
+      <div class="w-full space-y-2">
+        <div class="w-full h-2.5 bg-slate-900 rounded-full p-0.5 border border-teal-500/30 overflow-hidden shadow-[0_0_10px_rgba(0,0,0,0.5)]">
+          <div id="preloaderProgressBar" class="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-300 shadow-[0_0_12px_rgba(0,255,170,0.8)]" style="width: 5%;"></div>
+        </div>
+        <div class="flex justify-between items-center text-[10px] text-gray-400 font-mono">
+          <span>LOADING SYSTEM</span>
+          <span id="preloaderPercentage" class="text-emerald-400 font-bold">5%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL LOGIN / AUTH -->
+  <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="glass-card w-full max-w-md p-6 rounded-2xl border border-teal-500/30">
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center px-6 py-2 rounded-2xl bg-teal-500/10 border border-teal-500/30 mb-3 shadow-[0_0_15px_rgba(0,255,170,0.15)]">
+          <span class="text-2xl font-black italic tracking-widest text-emerald-400 drop-shadow-[0_0_8px_rgba(0,255,170,0.4)]">JKIND</span>
+        </div>
+        <h2 class="text-2xl font-bold text-white tracking-wide">REJECT PDI AUTH</h2>
+        <p class="text-xs text-gray-400 mt-1">Sistem Logging Inspeksi Kaca Unit Kendaraan</p>
+      </div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Nama MP PDI</label>
+          <input type="text" id="loginMpName" required placeholder="Masukkan Nama Lengkap MP" class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Shift Kerja</label>
+          <select id="loginShift" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+            <option value="">-- Pilih Shift --</option>
+            <option value="Shift 1">Shift 1</option>
+            <option value="Shift 2">Shift 2</option>
+          </select>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-xl btn-neon mt-2 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>MASUK SESI PDI</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- HEADER BAR UTAMA -->
+  <header class="glass-card rounded-2xl p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-4 no-print">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-teal-500/20 flex items-center justify-center text-emerald-400 font-bold text-lg border border-teal-500/40">
+        <i class="fa-solid fa-car-rear"></i>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold text-white tracking-wide flex items-center gap-2">
+          REJECT PDI <span class="text-xs px-2 py-0.5 rounded bg-teal-500/20 text-emerald-300 border border-teal-500/30">GLASS</span>
+        </h1>
+        <p class="text-xs text-gray-400">Pre-Delivery Inspection Control System</p>
+      </div>
+    </div>
+
+    <!-- Active User Profile Bar -->
+    <div id="userProfileBar" class="hidden flex items-center gap-3">
+      <button onclick="openApiConfigModal()" title="Cek/Setting URL API" class="p-2 text-gray-400 hover:text-emerald-400 hover:bg-slate-800 rounded-lg transition-colors">
+        <i class="fa-solid fa-gear text-base"></i>
+      </button>
+
+      <div class="flex items-center gap-3 bg-slate-800/80 px-4 py-2 rounded-xl border border-gray-700">
+        <div class="text-right">
+          <p id="dispMpName" class="text-sm font-semibold text-emerald-400">--</p>
+          <p id="dispShift" class="text-xs text-gray-400">--</p>
+        </div>
+        <button onclick="handleLogout()" title="Logout / Ganti Sesi" class="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors">
+          <i class="fa-solid fa-power-off text-base"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN NAVIGATION TABS -->
+  <nav class="flex items-center gap-2 mb-6 border-b border-gray-800 pb-3 overflow-x-auto no-print">
+    <button onclick="switchTab('input')" id="tabBtn-input" class="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap bg-teal-500/20 text-emerald-400 border border-teal-500/40">
+      <i class="fa-solid fa-pen-to-square"></i> Form Input Reject
+    </button>
+    <button onclick="switchTab('dashboard')" id="tabBtn-dashboard" class="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-gray-400 hover:text-white hover:bg-slate-800">
+      <i class="fa-solid fa-chart-pie"></i> Dashboard Pareto
+    </button>
+    <button onclick="switchTab('history')" id="tabBtn-history" class="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-gray-400 hover:text-white hover:bg-slate-800">
+      <i class="fa-solid fa-clock-rotate-left"></i> Riwayat & Monitoring
+    </button>
+    <button onclick="switchTab('export')" id="tabBtn-export" class="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-gray-400 hover:text-white hover:bg-slate-800">
+      <i class="fa-solid fa-file-export"></i> Export Laporan
+    </button>
+  </nav>
+
+  <!-- CONTENT 1: FORM INPUT REJECT -->
+  <section id="tab-input" class="tab-content max-w-4xl mx-auto">
+    <div class="glass-card rounded-2xl p-5 md:p-8">
+      <div class="flex items-center justify-between pb-4 mb-6 border-b border-gray-800">
+        <h2 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-circle-plus text-emerald-400"></i> Form Catat Temuan Reject Kaca
+        </h2>
+        <span class="text-xs text-gray-400 italic">Auto-ID Sekuensial</span>
+      </div>
+
+      <form id="rejectForm" onsubmit="submitFormReject(event)" class="space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-900/50 p-4 rounded-xl border border-gray-800">
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">Nama MP PDI (Terkunci)</label>
+            <input type="text" id="formMpName" readonly class="w-full px-3 py-2 rounded-lg input-dark text-xs font-semibold text-emerald-300">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">Shift (Terkunci)</label>
+            <input type="text" id="formShift" readonly class="w-full px-3 py-2 rounded-lg input-dark text-xs font-semibold text-emerald-300">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+              Nama QC <span class="text-rose-500">*</span>
+            </label>
+            <input type="text" id="namaQc" required placeholder="Masukkan Nama QC (Manual)" class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+              Team <span class="text-rose-500">*</span>
+            </label>
+            <select id="team" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+              <option value="">-- Pilih Team --</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+              <option value="F">F</option>
+              <option value="G">G</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+              Tanggal Pemasangan <span class="text-rose-500">*</span>
+            </label>
+            <input type="date" id="tanggalPemasangan" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+              Jam Pemasangan <span class="text-rose-500">*</span>
+            </label>
+            <input type="time" id="jamPemasangan" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+            No Rangka Kendaraan <span class="text-rose-500">*</span>
+          </label>
+          <div class="flex gap-2">
+            <input type="text" id="noRangka" required placeholder="Ketik manual atau Scan Barcode (cth: MHKM...)" class="flex-1 px-4 py-3 rounded-xl input-dark text-sm font-mono tracking-wider uppercase">
+            <button type="button" onclick="openBarcodeScanner()" class="px-4 py-3 rounded-xl bg-slate-800 text-emerald-400 border border-teal-500/40 hover:bg-teal-500/20 transition-all flex items-center gap-2 text-xs font-bold">
+              <i class="fa-solid fa-qrcode text-base"></i>
+              <span class="hidden sm:inline">SCAN CAMERA</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+              Jenis Mobil <span class="text-rose-500">*</span>
+            </label>
+            <select id="jenisMobil" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+              <option value="">-- Pilih Jenis Mobil --</option>
+              <option value="Agya">Agya</option>
+              <option value="Calya">Calya</option>
+              <option value="Raize">Raize</option>
+              <option value="New Yaris">New Yaris</option>
+              <option value="Yariscross">Yariscross</option>
+              <option value="Avanza">Avanza</option>
+              <option value="Veloz">Veloz</option>
+              <option value="Innova Reborn">Innova Reborn</option>
+              <option value="Innova Zenix">Innova Zenix</option>
+              <option value="Fortuner">Fortuner</option>
+              <option value="bZ4X">bZ4X</option>
+              <option value="Rush">Rush</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+              Klaim Kaca <span class="text-rose-500">*</span>
+            </label>
+            <select id="klaimKaca" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+              <option value="">-- Pilih Posisi Kaca --</option>
+              <option value="FD">FD (Windshield Front)</option>
+              <option value="Depan Kanan">Depan Kanan</option>
+              <option value="Depan Kiri">Depan Kiri</option>
+              <option value="Tengah Kanan">Tengah Kanan</option>
+              <option value="Tengah Kiri">Tengah Kiri</option>
+              <option value="Segitiga Kanan">Segitiga Kanan</option>
+              <option value="Segitiga Kiri">Segitiga Kiri</option>
+              <option value="Quarter Kanan">Quarter Kanan</option>
+              <option value="Quarter Kiri">Quarter Kiri</option>
+              <option value="Backdoor">Backdoor</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+              Klaim Reject <span class="text-rose-500">*</span>
+            </label>
+            <select id="klaimReject" onchange="toggleKlaimRejectLainnya()" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+              <option value="">-- Pilih Jenis Cacat Reject --</option>
+              <option value="Patah">Patah</option>
+              <option value="Bintik">Bintik</option>
+              <option value="Cacing">Cacing</option>
+              <option value="Renyek">Renyek</option>
+              <option value="Kelupas">Kelupas</option>
+              <option value="Sisa Air/Bubble">Sisa Air/Bubble</option>
+              <option value="Gelembung">Gelembung</option>
+              <option value="Bolong/Ngongkong">Bolong/Ngongkong</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+
+            <div id="containerKlaimRejectLainnya" class="hidden mt-3">
+              <input type="text" id="klaimRejectLainnya" placeholder="Tuliskan jenis reject lainnya (Manual)..." class="w-full px-4 py-3 rounded-xl input-dark text-sm border-amber-500/50">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+              Action <span class="text-rose-500">*</span>
+            </label>
+            <select id="action" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+              <option value="">-- Pilih Tindakan --</option>
+              <option value="Repair">Repair</option>
+              <option value="Ganti">Ganti</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-4">
+          <button type="submit" id="btnSubmitForm" class="w-full py-4 rounded-xl btn-neon flex items-center justify-center gap-2 text-base">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>SIMPAN DATA REJECT PDI</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- CONTENT 2: DASHBOARD ANALITIK PARETO -->
+  <section id="tab-dashboard" class="tab-content hidden max-w-6xl mx-auto space-y-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="glass-card rounded-2xl p-5 border-l-4 border-l-emerald-400">
+        <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Total Reject Hari Ini</p>
+        <h3 id="statToday" class="text-3xl font-black text-white">0</h3>
+        <p class="text-xs text-emerald-400 mt-2 flex items-center gap-1">
+          <i class="fa-solid fa-calendar-day"></i> <span id="statDateFormatted">--</span>
+        </p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 border-l-4 border-l-teal-400">
+        <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Top #1 Klaim Kaca</p>
+        <h3 id="statTopKaca1" class="text-xl font-bold text-teal-300 truncate">-</h3>
+        <p id="statTopKaca1Count" class="text-xs text-gray-400 mt-2">0 Temuan</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 border-l-4 border-l-amber-400">
+        <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Top #1 Jenis Cacat</p>
+        <h3 id="statTopReject1" class="text-xl font-bold text-amber-300 truncate">-</h3>
+        <p id="statTopReject1Count" class="text-xs text-gray-400 mt-2">0 Temuan</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 border-l-4 border-l-cyan-400">
+        <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Total Keseluruhan</p>
+        <h3 id="statTotalAllTime" class="text-3xl font-black text-cyan-300">0</h3>
+        <p class="text-xs text-gray-400 mt-2">Database Record</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-base font-bold text-white mb-4 flex items-center justify-between border-b border-gray-800 pb-3">
+          <span><i class="fa-solid fa-chart-simple text-emerald-400 mr-2"></i> Pareto Top 3 Klaim Kaca</span>
+          <span class="text-xs text-gray-400 font-normal">Komponen Terbanyak</span>
+        </h3>
+        <div id="topKacaContainer" class="space-y-4">
+          <p class="text-xs text-gray-500 italic">Memuat data statistik...</p>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-base font-bold text-white mb-4 flex items-center justify-between border-b border-gray-800 pb-3">
+          <span><i class="fa-solid fa-layer-group text-teal-400 mr-2"></i> Persentase Reject Hari Ini per Shift</span>
+          <span class="text-xs text-gray-400 font-normal">Shift Distribution</span>
+        </h3>
+        <div id="shiftStatsContainer" class="space-y-4">
+          <p class="text-xs text-gray-500 italic">Memuat data shift...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENT 3: RIWAYAT DAN MONITORING -->
+  <section id="tab-history" class="tab-content hidden max-w-6xl mx-auto space-y-4">
+    <div class="glass-card rounded-2xl p-5">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+        <div class="w-full md:w-auto flex-1 flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-400 text-sm"></i>
+            <input type="text" id="searchNoRangka" oninput="debounceSearch()" placeholder="Cari No Rangka..." class="w-full pl-10 pr-4 py-2.5 rounded-xl input-dark text-xs">
+          </div>
+
+          <select id="filterJenisMobil" onchange="loadHistoryData(1)" class="px-4 py-2.5 rounded-xl input-dark text-xs">
+            <option value="">-- Semua Jenis Mobil --</option>
+            <option value="Agya">Agya</option>
+            <option value="Calya">Calya</option>
+            <option value="Raize">Raize</option>
+            <option value="New Yaris">New Yaris</option>
+            <option value="Yariscross">Yariscross</option>
+            <option value="Avanza">Avanza</option>
+            <option value="Veloz">Veloz</option>
+            <option value="Innova Reborn">Innova Reborn</option>
+            <option value="Innova Zenix">Innova Zenix</option>
+            <option value="Fortuner">Fortuner</option>
+            <option value="bZ4X">bZ4X</option>
+            <option value="Rush">Rush</option>
+          </select>
+
+          <select id="filterShiftHistory" onchange="loadHistoryData(1)" class="px-4 py-2.5 rounded-xl input-dark text-xs">
+            <option value="">-- Semua Shift --</option>
+            <option value="Shift 1">Shift 1</option>
+            <option value="Shift 2">Shift 2</option>
+          </select>
+        </div>
+
+        <button onclick="loadHistoryData(1)" class="w-full md:w-auto px-4 py-2.5 rounded-xl bg-slate-800 text-emerald-400 border border-teal-500/30 text-xs font-semibold hover:bg-teal-500/20">
+          <i class="fa-solid fa-rotate text-xs mr-1"></i> Refresh Data
+        </button>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-gray-800">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-900/90 text-gray-300 font-semibold uppercase tracking-wider border-b border-gray-800">
+            <tr>
+              <th class="p-3">ID Transaksi</th>
+              <th class="p-3">Waktu</th>
+              <th class="p-3">MP PDI</th>
+              <th class="p-3">Shift</th>
+              <th class="p-3">QC</th>
+              <th class="p-3">Tgl/Jam Pasang</th>
+              <th class="p-3">Team</th>
+              <th class="p-3">No Rangka</th>
+              <th class="p-3">Jenis Mobil</th>
+              <th class="p-3">Klaim Kaca</th>
+              <th class="p-3">Klaim Reject</th>
+              <th class="p-3">Action</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody" class="divide-y divide-gray-800/60">
+            <!-- Table rows populated dynamically via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 pt-4 border-t border-gray-800 text-xs text-gray-400">
+        <span id="pageInfoText">Halaman 1 dari 1</span>
+        <div class="flex items-center gap-2">
+          <button id="btnPrevPage" onclick="changePage(-1)" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-gray-700 text-gray-300 hover:bg-slate-700 disabled:opacity-40">
+            <i class="fa-solid fa-chevron-left mr-1"></i> Prev
+          </button>
+          <button id="btnNextPage" onclick="changePage(1)" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-gray-700 text-gray-300 hover:bg-slate-700 disabled:opacity-40">
+            Next <i class="fa-solid fa-chevron-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENT 4: EXPORT LAPORAN INSPECTION -->
+  <section id="tab-export" class="tab-content hidden max-w-4xl mx-auto">
+    <div class="glass-card rounded-2xl p-6 space-y-6">
+      <div class="border-b border-gray-800 pb-4">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-file-export text-emerald-400"></i> Export & Cetak Laporan PDI
+        </h2>
+        <p class="text-xs text-gray-400 mt-1">Unduh data inspeksi reject kaca dalam format CSV atau Cetak PDF.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/50 p-4 rounded-xl border border-gray-800">
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Tanggal Mulai</label>
+          <input type="date" id="exportDateStart" class="w-full px-3 py-2 rounded-xl input-dark text-xs">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Tanggal Selesai</label>
+          <input type="date" id="exportDateEnd" class="w-full px-3 py-2 rounded-xl input-dark text-xs">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">Filter Shift</label>
+          <select id="exportShift" class="w-full px-3 py-2 rounded-xl input-dark text-xs">
+            <option value="">Semua Shift</option>
+            <option value="Shift 1">Shift 1</option>
+            <option value="Shift 2">Shift 2</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 pt-2">
+        <button onclick="downloadCSVReport()" class="flex-1 py-3.5 rounded-xl bg-slate-800 text-emerald-400 border border-teal-500/40 hover:bg-teal-500/20 font-bold text-xs flex items-center justify-center gap-2">
+          <i class="fa-solid fa-file-csv text-lg"></i>
+          <span>DOWNLOAD FILE CSV</span>
+        </button>
+
+        <button onclick="printPDFReport()" class="flex-1 py-3.5 rounded-xl btn-neon font-bold text-xs flex items-center justify-center gap-2">
+          <i class="fa-solid fa-print text-lg"></i>
+          <span>CETAK / EXPORT PDF</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRINT-ONLY VIEW SECTION FOR PDF -->
+  <div class="print-only p-4">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <h2 style="font-size: 16pt; font-weight: bold; margin: 0;">LAPORAN INSPECTION REJECT KACA (PDI)</h2>
+      <p style="font-size: 9pt; color: #555; margin-top: 5px;" id="printReportMeta">Tanggal Cetak: -</p>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>No</th><th>ID Transaksi</th><th>Tanggal & Waktu</th><th>MP PDI</th><th>Shift</th>
+          <th>Nama QC</th><th>Tgl/Jam Pasang</th><th>Team</th><th>No Rangka</th><th>Jenis Mobil</th>
+          <th>Klaim Kaca</th><th>Klaim Reject</th><th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="printTableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- BARCODE SCANNER MODAL -->
+  <div id="barcodeModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/85 p-4 no-print">
+    <div class="glass-card w-full max-w-md p-5 rounded-2xl relative">
+      <button onclick="closeBarcodeScanner()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+      <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-camera text-emerald-400"></i> Scan Barcode / QR No Rangka
+      </h3>
+      <div id="reader" class="w-full rounded-xl overflow-hidden bg-black min-h-[250px]"></div>
+      <p class="text-xs text-gray-400 text-center mt-3">Arahkan kamera ke Barcode / QR Code No Rangka pada kendaraan.</p>
+    </div>
+  </div>
+
+  <!-- MODAL OPTIONAL SETTING API URL -->
+  <div id="apiConfigModal" class="fixed inset-0 z-[90] hidden flex items-center justify-center bg-black/85 p-4 no-print">
+    <div class="glass-card w-full max-w-md p-6 rounded-2xl relative space-y-4">
+      <button onclick="closeApiConfigModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+      <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-gray-800 pb-3">
+        <i class="fa-solid fa-link text-emerald-400"></i> Pengaturan Web App API
+      </h3>
+      <p class="text-xs text-gray-300 leading-relaxed">Sistem terhubung ke Google Sheets Apps Script API:</p>
+      <div>
+        <label class="block text-xs font-semibold text-gray-400 mb-1">Web App API Exec URL</label>
+        <input type="url" id="inputApiUrl" placeholder="https://script.google.com/macros/s/AKfycbx.../exec" class="w-full px-4 py-3 rounded-xl input-dark text-xs font-mono">
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="saveApiUrlConfig()" class="w-full py-3 rounded-xl btn-neon font-bold text-xs">SIMPAN URL API</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM CONFIRMATION MODAL -->
+  <div id="customConfirmModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/80 backdrop-blur-md p-4 no-print">
+    <div class="glass-card w-full max-w-sm p-6 rounded-2xl border border-teal-500/30 text-center space-y-4 shadow-2xl transition-all">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30">
+        <i class="fa-solid fa-right-from-bracket text-xl"></i>
+      </div>
+      <div>
+        <h3 id="customConfirmTitle" class="text-base font-bold text-white tracking-wide">Konfirmasi</h3>
+        <p id="customConfirmMessage" class="text-xs text-gray-300 mt-2 leading-relaxed">Apakah Anda yakin ingin melakukan tindakan ini?</p>
+      </div>
+      <div class="flex items-center gap-3 pt-2">
+        <button onclick="closeCustomConfirm(false)" class="flex-1 py-2.5 rounded-xl bg-slate-800 text-gray-300 hover:bg-slate-700 border border-gray-700 font-semibold text-xs transition-colors">Batal</button>
+        <button onclick="closeCustomConfirm(true)" class="flex-1 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-lg shadow-rose-500/20 transition-all">Oke</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM ALERT MODAL -->
+  <div id="customAlertModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/80 backdrop-blur-md p-4 no-print">
+    <div class="glass-card w-full max-w-sm p-6 rounded-2xl border border-teal-500/30 text-center space-y-4 shadow-2xl transition-all">
+      <div id="customAlertIconContainer" class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-emerald-400 border border-teal-500/40">
+        <i class="fa-solid fa-circle-info text-xl"></i>
+      </div>
+      <div>
+        <h3 id="customAlertTitle" class="text-base font-bold text-white tracking-wide">Informasi</h3>
+        <p id="customAlertMessage" class="text-xs text-gray-300 mt-2 leading-relaxed">Pesan informasi</p>
+      </div>
+      <div class="pt-2">
+        <button onclick="closeCustomAlert()" class="w-full py-2.5 rounded-xl btn-neon font-bold text-xs">Mengerti</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT FRONTEND LOGIC -->
+  <script>
+    // =========================================================================
+    // TEMPELKAN URL DEPLOYMENT WEB APP GOOGLE APPS SCRIPT PADA BARIS DI BAWAH
+    // =========================================================================
+    var DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycby29pgX1ylV7cgS7BjlxPYyHDquIL2HiWB8D75UzHniILqb0n1tsTqwCYjGL2lQEb8bJw/exec";
+
+    var currentUser = { mpName: '', shift: '' };
+    var currentPage = 1;
+    var totalPages = 1;
+    var searchTimer = null;
+    var html5QrcodeScanner = null;
+    var customConfirmCallback = null;
+
+    // PRELOADER PROGRESS BAR ANIMATION HELPER
+    function updatePreloader(percentage, statusText) {
+      var pBar = document.getElementById('preloaderProgressBar');
+      var pText = document.getElementById('preloaderPercentage');
+      var pStatus = document.getElementById('preloaderStatusText');
+
+      if (pBar) pBar.style.width = percentage + '%';
+      if (pText) pText.textContent = percentage + '%';
+      if (pStatus && statusText) pStatus.textContent = statusText;
+
+      if (percentage >= 100) {
+        setTimeout(function() {
+          var loader = document.getElementById('preloader');
+          if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(function() { loader.style.display = 'none'; }, 500);
+          }
+        }, 300);
+      }
+    }
+
+    function getApiUrl() {
+      return localStorage.getItem('pdi_gas_url') || DEFAULT_GAS_URL;
+    }
+
+    function callGasApi(action, payload, successCb, failureCb) {
+      var apiUrl = getApiUrl();
+      if (!apiUrl || apiUrl.indexOf('script.google.com') === -1 || apiUrl === "PASTE_URL_WEB_APP_DI_SINI") {
+        updatePreloader(100, 'Aplikasi Siap');
+        showCustomAlert('SETTING API DIBUTUHKAN', 'Harap isi variabel DEFAULT_GAS_URL di file index.html dengan URL Web App Deployment milikmu!', 'warning');
+        openApiConfigModal();
+        if (failureCb) failureCb('URL API belum diatur');
+        return;
+      }
+
+      var fullUrl = apiUrl + '?action=' + encodeURIComponent(action) + '&payload=' + encodeURIComponent(JSON.stringify(payload || {}));
+
+      fetch(fullUrl, { method: 'GET', mode: 'cors' })
+      .then(function(res) { return res.json(); })
+      .then(function(data) { if (successCb) successCb(data); })
+      .catch(function(err) {
+        console.error('API Error:', err);
+        updatePreloader(100, 'Koneksi Selesai');
+        if (failureCb) failureCb(err);
+        else showCustomAlert('KONEKSI API GAGAL', 'Gagal terhubung ke Google Sheets API. Pastikan URL Web App benar dan "Who has access" adalah "Anyone".', 'danger');
+      });
+    }
+
+    function openApiConfigModal() {
+      document.getElementById('inputApiUrl').value = getApiUrl();
+      document.getElementById('apiConfigModal').classList.remove('hidden');
+    }
+
+    function closeApiConfigModal() {
+      document.getElementById('apiConfigModal').classList.add('hidden');
+    }
+
+    function saveApiUrlConfig() {
+      var val = document.getElementById('inputApiUrl').value.trim();
+      if (!val || val.indexOf('script.google.com') === -1) {
+        showCustomAlert('URL INVALID', 'Masukkan URL deployment Apps Script yang valid (berakhiran /exec)!', 'warning');
+        return;
+      }
+      localStorage.setItem('pdi_gas_url', val);
+      closeApiConfigModal();
+      showCustomAlert('API CONFIG TERSIMPAN', 'URL Web App API berhasil disimpan!', 'success');
+      loadInitialAppData();
+    }
+
+    function showCustomAlert(title, message, type) {
+      type = type || 'info';
+      var modal = document.getElementById('customAlertModal');
+      var titleEl = document.getElementById('customAlertTitle');
+      var msgEl = document.getElementById('customAlertMessage');
+      var iconContainer = document.getElementById('customAlertIconContainer');
+      
+      titleEl.textContent = title;
+      msgEl.textContent = message;
+
+      if (type === 'success') {
+        iconContainer.className = 'inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40';
+        iconContainer.innerHTML = '<i class="fa-solid fa-circle-check text-xl"></i>';
+      } else if (type === 'danger') {
+        iconContainer.className = 'inline-flex items-center justify-center w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40';
+        iconContainer.innerHTML = '<i class="fa-solid fa-circle-xmark text-xl"></i>';
+      } else if (type === 'warning') {
+        iconContainer.className = 'inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40';
+        iconContainer.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-xl"></i>';
+      } else {
+        iconContainer.className = 'inline-flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-emerald-400 border border-teal-500/40';
+        iconContainer.innerHTML = '<i class="fa-solid fa-circle-info text-xl"></i>';
+      }
+      modal.classList.remove('hidden');
+    }
+
+    function closeCustomAlert() {
+      document.getElementById('customAlertModal').classList.add('hidden');
+    }
+
+    function showCustomConfirm(title, message, onConfirm) {
+      var modal = document.getElementById('customConfirmModal');
+      document.getElementById('customConfirmTitle').textContent = title;
+      document.getElementById('customConfirmMessage').textContent = message;
+      customConfirmCallback = onConfirm;
+      modal.classList.remove('hidden');
+    }
+
+    function closeCustomConfirm(isConfirmed) {
+      document.getElementById('customConfirmModal').classList.add('hidden');
+      if (isConfirmed && typeof customConfirmCallback === 'function') customConfirmCallback();
+      customConfirmCallback = null;
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      updatePreloader(25, 'Memuat Preferensi Sistem...');
+      setDefaultDateAndTime();
+      checkLoginSession();
+    });
+
+    function setDefaultDateAndTime() {
+      var now = new Date();
+      var currentHour = now.getHours();
+      var workDate = new Date(now.getTime());
+      
+      if (currentHour < 7) {
+        workDate.setDate(workDate.getDate() - 1);
+      }
+      
+      var dateStr = workDate.toISOString().split('T')[0];
+      var timeStr = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+
+      var tglInput = document.getElementById('tanggalPemasangan');
+      var jamInput = document.getElementById('jamPemasangan');
+      if (tglInput && !tglInput.value) tglInput.value = dateStr;
+      if (jamInput && !jamInput.value) jamInput.value = timeStr;
+    }
+
+    function checkLoginSession() {
+      var savedSession = localStorage.getItem('pdi_user_session');
+      if (savedSession) {
+        try {
+          currentUser = JSON.parse(savedSession);
+          if (currentUser.mpName && currentUser.shift) {
+            updatePreloader(50, 'Membuat Sesi Pengguna...');
+            applySessionToUI();
+            return;
+          }
+        } catch (e) {}
+      }
+      updatePreloader(100, 'Menunggu Autentikasi Pengguna...');
+      showLoginModal();
+    }
+
+    function showLoginModal() {
+      document.getElementById('loginModal').classList.remove('hidden');
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      var mpName = document.getElementById('loginMpName').value.trim();
+      var shift = document.getElementById('loginShift').value;
+
+      if (!mpName || !shift) {
+        showCustomAlert('PERINGATAN', 'Harap isi Nama MP PDI dan Pilih Shift!', 'warning');
+        return;
+      }
+
+      currentUser = { mpName: mpName, shift: shift };
+      localStorage.setItem('pdi_user_session', JSON.stringify(currentUser));
+      
+      updatePreloader(20, 'Memulai Sesi PDI Baru...');
+      document.getElementById('preloader').style.display = 'flex';
+      document.getElementById('preloader').style.opacity = '1';
+
+      applySessionToUI();
+      document.getElementById('loginModal').classList.add('hidden');
+    }
+
+    function applySessionToUI() {
+      document.getElementById('formMpName').value = currentUser.mpName;
+      document.getElementById('formShift').value = currentUser.shift;
+      document.getElementById('dispMpName').textContent = currentUser.mpName;
+      document.getElementById('dispShift').textContent = currentUser.shift;
+      document.getElementById('userProfileBar').classList.remove('hidden');
+      document.getElementById('loginModal').classList.add('hidden');
+
+      loadCachedData();
+      updatePreloader(75, 'Menghubungkan ke Database Google Sheets...');
+      loadInitialAppData();
+    }
+
+    function loadCachedData() {
+      var cachedHistory = localStorage.getItem('pdi_cache_history');
+      var cachedStats = localStorage.getItem('pdi_cache_stats');
+      if (cachedHistory) renderHistoryTable(JSON.parse(cachedHistory));
+      if (cachedStats) renderDashboard(JSON.parse(cachedStats));
+    }
+
+    function loadInitialAppData() {
+      var params = {
+        page: 1,
+        pageSize: 10,
+        searchNoRangka: document.getElementById('searchNoRangka').value,
+        filterJenisMobil: document.getElementById('filterJenisMobil').value,
+        filterShift: document.getElementById('filterShiftHistory').value
+      };
+
+      callGasApi('getInitialAppData', params, function(res) {
+        if (res && res.success) {
+          if (res.history) {
+            renderHistoryTable(res.history);
+            localStorage.setItem('pdi_cache_history', JSON.stringify(res.history));
+          }
+          if (res.stats) {
+            renderDashboard(res.stats);
+            localStorage.setItem('pdi_cache_stats', JSON.stringify(res.stats));
+          }
+        }
+        updatePreloader(100, 'Sistem Siap Digunakan');
+      }, function() {
+        updatePreloader(100, 'Offline / Cache Mode');
+      });
+    }
+
+    function handleLogout() {
+      showCustomConfirm('KONFIRMASI LOGOUT', 'Apakah Anda yakin ingin keluar dari sesi pengguna ini?', function() {
+        localStorage.removeItem('pdi_user_session');
+        currentUser = { mpName: '', shift: '' };
+        document.getElementById('userProfileBar').classList.add('hidden');
+        showLoginModal();
+      });
+    }
+
+    function toggleKlaimRejectLainnya() {
+      var val = document.getElementById('klaimReject').value;
+      var container = document.getElementById('containerKlaimRejectLainnya');
+      var inputLainnya = document.getElementById('klaimRejectLainnya');
+
+      if (val === 'Lainnya') {
+        container.classList.remove('hidden');
+        inputLainnya.required = true;
+        inputLainnya.focus();
+      } else {
+        container.classList.add('hidden');
+        inputLainnya.required = false;
+        inputLainnya.value = '';
+      }
+    }
+
+    function switchTab(tabName) {
+      var tabs = ['input', 'dashboard', 'history', 'export'];
+      for (var i = 0; i < tabs.length; i++) {
+        var t = tabs[i];
+        var contentEl = document.getElementById('tab-' + t);
+        var btnEl = document.getElementById('tabBtn-' + t);
+
+        if (t === tabName) {
+          contentEl.classList.remove('hidden');
+          btnEl.className = 'px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap bg-teal-500/20 text-emerald-400 border border-teal-500/40';
+        } else {
+          contentEl.classList.add('hidden');
+          btnEl.className = 'px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-gray-400 hover:text-white hover:bg-slate-800';
+        }
+      }
+
+      if (tabName === 'dashboard') loadDashboardStats();
+      else if (tabName === 'history') loadHistoryData(currentPage);
+    }
+
+    function submitFormReject(e) {
+      e.preventDefault();
+      var btnSubmit = document.getElementById('btnSubmitForm');
+      
+      var klaimRejectVal = document.getElementById('klaimReject').value;
+      if (klaimRejectVal === 'Lainnya') {
+        klaimRejectVal = document.getElementById('klaimRejectLainnya').value.trim();
+        if (!klaimRejectVal) {
+          showCustomAlert('FORM BELUM LENGKAP', 'Harap isi jenis reject lainnya secara manual!', 'warning');
+          return;
+        }
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SIMPANNING DATA...';
+
+      var payload = {
+        mpName: currentUser.mpName,
+        shift: currentUser.shift,
+        namaQc: document.getElementById('namaQc').value.trim(),
+        tanggalPemasangan: document.getElementById('tanggalPemasangan').value,
+        jamPemasangan: document.getElementById('jamPemasangan').value,
+        team: document.getElementById('team').value,
+        noRangka: document.getElementById('noRangka').value.trim().toUpperCase(),
+        jenisMobil: document.getElementById('jenisMobil').value,
+        klaimKaca: document.getElementById('klaimKaca').value,
+        klaimReject: klaimRejectVal,
+        action: document.getElementById('action').value
+      };
+
+      callGasApi('saveRejectData', payload, function(res) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> SIMPAN DATA REJECT PDI';
+
+        if (res && res.success) {
+          showCustomAlert('BERHASIL DISIMPAN', 'Data Reject PDI berhasil disimpan. ID: ' + res.data.id, 'success');
+          
+          document.getElementById('namaQc').value = '';
+          document.getElementById('team').value = '';
+          document.getElementById('noRangka').value = '';
+          document.getElementById('jenisMobil').value = '';
+          document.getElementById('klaimKaca').value = '';
+          document.getElementById('klaimReject').value = '';
+          document.getElementById('klaimRejectLainnya').value = '';
+          document.getElementById('containerKlaimRejectLainnya').classList.add('hidden');
+          document.getElementById('action').value = '';
+          
+          setDefaultDateAndTime();
+          loadInitialAppData();
+        } else {
+          showCustomAlert('GAGAL DISIMPAN', (res ? res.message : 'Unknown error'), 'danger');
+        }
+      }, function(err) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> SIMPAN DATA REJECT PDI';
+        showCustomAlert('SERVER ERROR', err.toString(), 'danger');
+      });
+    }
+
+    function openBarcodeScanner() {
+      document.getElementById('barcodeModal').classList.remove('hidden');
+      
+      if (typeof Html5Qrcode !== 'undefined') {
+        html5QrcodeScanner = new Html5Qrcode("reader");
+        var config = { fps: 10, qrbox: { width: 250, height: 150 } };
+        
+        html5QrcodeScanner.start(
+          { facingMode: "environment" },
+          config,
+          onScanSuccess
+        ).catch(function(err) {
+          console.error("Camera access failed: ", err);
+          showCustomAlert('AKSES KAMERA GAGAL', 'Gagal membuka kamera HP. Pastikan izin kamera telah diberikan.', 'danger');
+          closeBarcodeScanner();
+        });
+      } else {
+        showCustomAlert('SCANNER UNREADY', 'Library Scanner Barcode belum siap. Gunakan input manual.', 'warning');
+        closeBarcodeScanner();
+      }
+    }
+
+    function onScanSuccess(decodedText) {
+      if (decodedText) {
+        document.getElementById('noRangka').value = decodedText.toUpperCase();
+        closeBarcodeScanner();
+      }
+    }
+
+    function closeBarcodeScanner() {
+      if (html5QrcodeScanner) {
+        html5QrcodeScanner.stop().then(function() {
+          html5QrcodeScanner.clear();
+          document.getElementById('barcodeModal').classList.add('hidden');
+        }).catch(function() {
+          document.getElementById('barcodeModal').classList.add('hidden');
+        });
+      } else {
+        document.getElementById('barcodeModal').classList.add('hidden');
+      }
+    }
+
+    function debounceSearch() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function() { loadHistoryData(1); }, 350);
+    }
+
+    function loadHistoryData(page) {
+      currentPage = page || 1;
+      var params = {
+        page: currentPage,
+        pageSize: 10,
+        searchNoRangka: document.getElementById('searchNoRangka').value,
+        filterJenisMobil: document.getElementById('filterJenisMobil').value,
+        filterShift: document.getElementById('filterShiftHistory').value
+      };
+
+      callGasApi('getHistoryData', params, function(res) {
+        renderHistoryTable(res);
+        if (currentPage === 1) localStorage.setItem('pdi_cache_history', JSON.stringify(res));
+      });
+    }
+
+    function renderHistoryTable(res) {
+      var tbody = document.getElementById('historyTableBody');
+      tbody.innerHTML = '';
+
+      if (!res || !res.items || res.items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="12" class="p-6 text-center text-gray-500 italic">Tidak ada data transaksi reject ditemukan.</td></tr>';
+        document.getElementById('pageInfoText').textContent = 'Halaman 1 dari 1 (0 Data)';
+        document.getElementById('btnPrevPage').disabled = true;
+        document.getElementById('btnNextPage').disabled = true;
+        return;
+      }
+
+      totalPages = res.totalPages || 1;
+      document.getElementById('pageInfoText').textContent = 'Halaman ' + res.page + ' dari ' + totalPages + ' (' + res.totalCount + ' Data)';
+      document.getElementById('btnPrevPage').disabled = (res.page <= 1);
+      document.getElementById('btnNextPage').disabled = (res.page >= totalPages);
+
+      var html = '';
+      for (var i = 0; i < res.items.length; i++) {
+        var item = res.items[i];
+        var actionClass = (item.action === 'Ganti') ? 'badge-ganti' : 'badge-repair';
+        
+        html += '<tr class="hover:bg-slate-800/50 transition-colors">';
+        html += '<td class="p-3 font-mono text-emerald-400 font-semibold text-xs">' + escapeHtml(item.id) + '</td>';
+        html += '<td class="p-3 text-xs text-gray-300">' + escapeHtml(item.tanggal) + ' <span class="text-gray-500 block text-[10px]">' + escapeHtml(item.waktu) + '</span></td>';
+        html += '<td class="p-3 text-xs text-gray-200">' + escapeHtml(item.mpName) + '</td>';
+        html += '<td class="p-3 text-xs"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-teal-300 border border-teal-500/30">' + escapeHtml(item.shift) + '</span></td>';
+        html += '<td class="p-3 text-xs text-gray-300 font-medium">' + escapeHtml(item.namaQc) + '</td>';
+        html += '<td class="p-3 text-xs text-gray-400">' + escapeHtml(item.tanggalPemasangan) + ' <span class="text-gray-500 block text-[10px]">' + escapeHtml(item.jamPemasangan) + '</span></td>';
+        html += '<td class="p-3 text-xs"><span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Team ' + escapeHtml(item.team) + '</span></td>';
+        html += '<td class="p-3 font-mono text-xs text-white font-medium">' + escapeHtml(item.noRangka) + '</td>';
+        html += '<td class="p-3 text-xs text-gray-300">' + escapeHtml(item.jenisMobil) + '</td>';
+        html += '<td class="p-3 text-xs text-amber-300 font-medium">' + escapeHtml(item.klaimKaca) + '</td>';
+        html += '<td class="p-3 text-xs text-rose-300 font-medium">' + escapeHtml(item.klaimReject) + '</td>';
+        html += '<td class="p-3 text-xs"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold ' + actionClass + '">' + escapeHtml(item.action) + '</span></td>';
+        html += '</tr>';
+      }
+
+      tbody.innerHTML = html;
+    }
+
+    function changePage(delta) {
+      var targetPage = currentPage + delta;
+      if (targetPage >= 1 && targetPage <= totalPages) loadHistoryData(targetPage);
+    }
+
+    function loadDashboardStats() {
+      callGasApi('getDashboardStats', {}, function(res) {
+        renderDashboard(res);
+        localStorage.setItem('pdi_cache_stats', JSON.stringify(res));
+      });
+    }
+
+    function renderDashboard(data) {
+      if (!data) return;
+
+      var displayWorkDate = data.workDateFormatted || new Date().toISOString().split('T')[0];
+      document.getElementById('statToday').textContent = data.totalToday || 0;
+      document.getElementById('statTotalAllTime').textContent = data.totalAllTime || 0;
+      document.getElementById('statDateFormatted').textContent = displayWorkDate;
+
+      if (data.topKlaimKaca && data.topKlaimKaca.length > 0) {
+        document.getElementById('statTopKaca1').textContent = data.topKlaimKaca[0].name;
+        document.getElementById('statTopKaca1Count').textContent = data.topKlaimKaca[0].count + ' Temuan';
+      } else {
+        document.getElementById('statTopKaca1').textContent = '-';
+        document.getElementById('statTopKaca1Count').textContent = '0 Temuan';
+      }
+
+      if (data.topKlaimReject && data.topKlaimReject.length > 0) {
+        document.getElementById('statTopReject1').textContent = data.topKlaimReject[0].name;
+        document.getElementById('statTopReject1Count').textContent = data.topKlaimReject[0].count + ' Temuan';
+      } else {
+        document.getElementById('statTopReject1').textContent = '-';
+        document.getElementById('statTopReject1Count').textContent = '0 Temuan';
+      }
+
+      var kacaContainer = document.getElementById('topKacaContainer');
+      kacaContainer.innerHTML = '';
+      
+      if (!data.topKlaimKaca || data.topKlaimKaca.length === 0) {
+        kacaContainer.innerHTML = '<p class="text-xs text-gray-500 italic">Belum ada data reject kaca.</p>';
+      } else {
+        var maxCount = data.topKlaimKaca[0].count || 1;
+        var htmlKaca = '';
+        for (var i = 0; i < data.topKlaimKaca.length; i++) {
+          var item = data.topKlaimKaca[i];
+          var pct = Math.round((item.count / maxCount) * 100);
+          
+          htmlKaca += '<div><div class="flex justify-between text-xs mb-1">';
+          htmlKaca += '<span class="font-semibold text-gray-200">#' + (i+1) + ' ' + escapeHtml(item.name) + '</span>';
+          htmlKaca += '<span class="text-emerald-400 font-bold">' + item.count + ' Units</span></div>';
+          htmlKaca += '<div class="w-full h-2 rounded-full bg-gray-800 overflow-hidden">';
+          htmlKaca += '<div class="h-full bg-emerald-400 rounded-full" style="width: ' + pct + '%"></div></div></div>';
+        }
+        kacaContainer.innerHTML = htmlKaca;
+      }
+
+      var shiftContainer = document.getElementById('shiftStatsContainer');
+      shiftContainer.innerHTML = '';
+
+      if (!data.shiftStats || data.shiftStats.length === 0) {
+        shiftContainer.innerHTML = '<p class="text-xs text-gray-500 italic">Belum ada data shift hari ini.</p>';
+      } else {
+        var htmlShift = '';
+        for (var j = 0; j < data.shiftStats.length; j++) {
+          var s = data.shiftStats[j];
+          htmlShift += '<div><div class="flex justify-between text-xs mb-1">';
+          htmlShift += '<span class="font-semibold text-gray-200">' + escapeHtml(s.shift) + '</span>';
+          htmlShift += '<span class="text-teal-300 font-bold">' + s.count + ' (' + s.percentage + '%)</span></div>';
+          htmlShift += '<div class="w-full h-2 rounded-full bg-gray-800 overflow-hidden">';
+          htmlShift += '<div class="h-full bg-teal-400 rounded-full" style="width: ' + s.percentage + '%"></div></div></div>';
+        }
+        shiftContainer.innerHTML = htmlShift;
+      }
+    }
+
+    function downloadCSVReport() {
+      var params = {
+        dateStart: document.getElementById('exportDateStart').value,
+        dateEnd: document.getElementById('exportDateEnd').value,
+        shift: document.getElementById('exportShift').value
+      };
+
+      callGasApi('getExportData', params, function(res) {
+        if (!res || !res.items || res.items.length === 0) {
+          showCustomAlert('EXPORT DATA', 'Tidak ada data yang cocok untuk diexport CSV.', 'warning');
+          return;
+        }
+
+        var csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "ID Transaksi,Tanggal,Waktu,Nama MP PDI,Shift,Nama QC,Tanggal Pemasangan,Jam Pemasangan,Team,No Rangka,Jenis Mobil,Klaim Kaca,Klaim Reject,Action\n";
+
+        res.items.forEach(function(r) {
+          var rowStr = [
+            '"' + r.id + '"', '"' + r.tanggal + '"', '"' + r.waktu + '"', '"' + r.mpName + '"',
+            '"' + r.shift + '"', '"' + r.namaQc + '"', '"' + r.tanggalPemasangan + '"', '"' + r.jamPemasangan + '"',
+            '"' + r.team + '"', '"' + r.noRangka + '"', '"' + r.jenisMobil + '"', '"' + r.klaimKaca + '"',
+            '"' + r.klaimReject + '"', '"' + r.action + '"'
+          ].join(",");
+          csvContent += rowStr + "\n";
+        });
+
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "Laporan_Reject_PDI_" + new Date().toISOString().split('T')[0] + ".csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    }
+
+    function printPDFReport() {
+      var params = {
+        dateStart: document.getElementById('exportDateStart').value,
+        dateEnd: document.getElementById('exportDateEnd').value,
+        shift: document.getElementById('exportShift').value
+      };
+
+      callGasApi('getExportData', params, function(res) {
+        if (!res || !res.items || res.items.length === 0) {
+          showCustomAlert('CETAK LAPORAN', 'Tidak ada data untuk dicetak.', 'warning');
+          return;
+        }
+
+        var printBody = document.getElementById('printTableBody');
+        printBody.innerHTML = '';
+        document.getElementById('printReportMeta').textContent = 'Tanggal Cetak: ' + new Date().toLocaleString('id-ID');
+
+        var html = '';
+        for (var i = 0; i < res.items.length; i++) {
+          var item = res.items[i];
+          html += '<tr>';
+          html += '<td>' + (i + 1) + '</td>';
+          html += '<td>' + escapeHtml(item.id) + '</td>';
+          html += '<td>' + escapeHtml(item.tanggal) + ' ' + escapeHtml(item.waktu) + '</td>';
+          html += '<td>' + escapeHtml(item.mpName) + '</td>';
+          html += '<td>' + escapeHtml(item.shift) + '</td>';
+          html += '<td>' + escapeHtml(item.namaQc) + '</td>';
+          html += '<td>' + escapeHtml(item.tanggalPemasangan) + ' ' + escapeHtml(item.jamPemasangan) + '</td>';
+          html += '<td>' + escapeHtml(item.team) + '</td>';
+          html += '<td>' + escapeHtml(item.noRangka) + '</td>';
+          html += '<td>' + escapeHtml(item.jenisMobil) + '</td>';
+          html += '<td>' + escapeHtml(item.klaimKaca) + '</td>';
+          html += '<td>' + escapeHtml(item.klaimReject) + '</td>';
+          html += '<td>' + escapeHtml(item.action) + '</td>';
+          html += '</tr>';
+        }
+        printBody.innerHTML = html;
+        window.print();
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
