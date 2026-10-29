@@ -11,6 +11,9 @@
   <!-- html5-qrcode CDN untuk Barcode / QR Code Scanner Kamera HP -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
+  <!-- SheetJS CDN untuk Export Format Excel (.xlsx) Formal -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -538,7 +541,7 @@
         <h2 class="text-lg font-bold text-white flex items-center gap-2">
           <i class="fa-solid fa-file-export text-emerald-400"></i> Export & Cetak Laporan PDI
         </h2>
-        <p class="text-xs text-gray-400 mt-1">Unduh data inspeksi reject kaca dalam format CSV atau Cetak PDF.</p>
+        <p class="text-xs text-gray-400 mt-1">Unduh data inspeksi reject kaca dalam format Excel Formal (.xlsx) atau Cetak PDF.</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/50 p-4 rounded-xl border border-gray-800">
@@ -561,9 +564,9 @@
       </div>
 
       <div class="flex flex-col sm:flex-row gap-4 pt-2">
-        <button onclick="downloadCSVReport()" class="flex-1 py-3.5 rounded-xl bg-slate-800 text-emerald-400 border border-teal-500/40 hover:bg-teal-500/20 font-bold text-xs flex items-center justify-center gap-2">
-          <i class="fa-solid fa-file-csv text-lg"></i>
-          <span>DOWNLOAD FILE CSV</span>
+        <button onclick="downloadExcelReport()" class="flex-1 py-3.5 rounded-xl bg-emerald-600/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 font-bold text-xs flex items-center justify-center gap-2 transition-all">
+          <i class="fa-solid fa-file-excel text-lg"></i>
+          <span>DOWNLOAD EXCEL FORMAL (.XLSX)</span>
         </button>
 
         <button onclick="printPDFReport()" class="flex-1 py-3.5 rounded-xl btn-neon font-bold text-xs flex items-center justify-center gap-2">
@@ -664,7 +667,7 @@
     // =========================================================================
     // TEMPELKAN URL DEPLOYMENT WEB APP GOOGLE APPS SCRIPT PADA BARIS DI BAWAH
     // =========================================================================
-    var DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbydtJdiCWWtl5Hkw0GZolH8B06Ruz-I-u1l42BFwdR5haObcgyhtoObk_H6TV9R3wVwgg/exec";
+    var DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbyp7wCyj8PwWDixuZEVFXPzSROHdKjU5taFjWHP10zBYzfbONbMtgnZpoqHyIsMDgVSSA/exec";
 
     var currentUser = { mpName: '', shift: '' };
     var currentPage = 1;
@@ -788,7 +791,7 @@
     window.addEventListener('DOMContentLoaded', function() {
       updatePreloader(30, 'Memuat Cache Lokal Instan...');
       setDefaultDateAndTime();
-      loadCachedData(); // Render instan dari cache sebelum fetch server
+      loadCachedData();
       checkLoginSession();
     });
 
@@ -1067,7 +1070,7 @@
 
     function debounceSearch() {
       clearTimeout(searchTimer);
-      searchTimer = setTimeout(function() { loadHistoryData(1); }, 250); // Dioptimalkan lebih responsif
+      searchTimer = setTimeout(function() { loadHistoryData(1); }, 250);
     }
 
     function loadHistoryData(page) {
@@ -1209,7 +1212,8 @@
       }
     }
 
-    function downloadCSVReport() {
+    // EXPORT LAPORAN FORMAL EXCEL (.XLSX) WITH SHEETJS
+    function downloadExcelReport() {
       var params = {
         dateStart: document.getElementById('exportDateStart').value,
         dateEnd: document.getElementById('exportDateEnd').value,
@@ -1218,30 +1222,93 @@
 
       callGasApi('getExportData', params, function(res) {
         if (!res || !res.items || res.items.length === 0) {
-          showCustomAlert('EXPORT DATA', 'Tidak ada data yang cocok untuk diexport CSV.', 'warning');
+          showCustomAlert('EXPORT DATA', 'Tidak ada data yang cocok untuk diexport Excel.', 'warning');
           return;
         }
 
-        var csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "ID Transaksi,Tanggal,Waktu,Nama MP PDI,Shift,Nama QC,Tanggal Pemasangan,Jam Pemasangan,Team,No Rangka,Jenis Mobil,Klaim Kaca,Klaim Reject,Action\n";
+        if (typeof XLSX === 'undefined') {
+          showCustomAlert('LIBRARY UNREADY', 'Library Excel SheetJS belum siap. Periksa koneksi internet.', 'danger');
+          return;
+        }
 
-        res.items.forEach(function(r) {
-          var rowStr = [
-            '"' + r.id + '"', '"' + r.tanggal + '"', '"' + r.waktu + '"', '"' + r.mpName + '"',
-            '"' + r.shift + '"', '"' + r.namaQc + '"', '"' + r.tanggalPemasangan + '"', '"' + r.jamPemasangan + '"',
-            '"' + r.team + '"', '"' + r.noRangka + '"', '"' + r.jenisMobil + '"', '"' + r.klaimKaca + '"',
-            '"' + r.klaimReject + '"', '"' + r.action + '"'
-          ].join(",");
-          csvContent += rowStr + "\n";
-        });
+        // 1. Buat Header Laporan Formal
+        var excelData = [
+          ["LAPORAN TEMUAN REJECT GLASS FILM - PDI (PRE-DELIVERY INSPECTION)"],
+          ["JKIND - QUALITY CONTROL CONTROL SYSTEM"],
+          ["Tanggal Cetak: " + new Date().toLocaleString('id-ID')],
+          ["Filter Tanggal: " + (params.dateStart || 'Semua') + " s/d " + (params.dateEnd || 'Semua') + " | Shift: " + (params.shift || 'Semua Shift')],
+          [] // Baris Kosong Pemisah
+        ];
 
-        var encodedUri = encodeURI(csvContent);
-        var link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "Laporan_Reject_PDI_" + new Date().toISOString().split('T')[0] + ".csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // 2. Baris Header Tabel Formal
+        excelData.push([
+          "NO",
+          "ID TRANSAKSI",
+          "TANGGAL",
+          "WAKTU",
+          "NAMA MP PDI",
+          "SHIFT",
+          "NAMA QC",
+          "TGL PASANG",
+          "JAM PASANG",
+          "TEAM",
+          "NO RANGKA",
+          "JENIS MOBIL",
+          "KLAIM KACA",
+          "KLAIM REJECT",
+          "ACTION"
+        ]);
+
+        // 3. Masukkan Data Baris
+        for (var i = 0; i < res.items.length; i++) {
+          var r = res.items[i];
+          excelData.push([
+            i + 1,
+            r.id,
+            r.tanggal,
+            r.waktu,
+            r.mpName,
+            r.shift,
+            r.namaQc,
+            r.tanggalPemasangan,
+            r.jamPemasangan,
+            r.team,
+            r.noRangka,
+            r.jenisMobil,
+            r.klaimKaca,
+            r.klaimReject,
+            r.action
+          ]);
+        }
+
+        // 4. Generate Worksheet & Workbook
+        var ws = XLSX.utils.aoa_to_sheet(excelData);
+
+        // Atur Lebar Kolom Otomatis (Autofit Columns)
+        ws['!cols'] = [
+          { wch: 5 },  // NO
+          { wch: 22 }, // ID TRANSAKSI
+          { wch: 14 }, // TANGGAL
+          { wch: 10 }, // WAKTU
+          { wch: 20 }, // NAMA MP PDI
+          { wch: 10 }, // SHIFT
+          { wch: 16 }, // NAMA QC
+          { wch: 14 }, // TGL PASANG
+          { wch: 12 }, // JAM PASANG
+          { wch: 8 },  // TEAM
+          { wch: 22 }, // NO RANGKA
+          { wch: 16 }, // JENIS MOBIL
+          { wch: 25 }, // KLAIM KACA
+          { wch: 25 }, // KLAIM REJECT
+          { wch: 12 }  // ACTION
+        ];
+
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Laporan_Reject_PDI");
+
+        // 5. Unduh File Excel (.xlsx)
+        var fileName = "Laporan_Reject_PDI_GlassFilm_" + new Date().toISOString().split('T')[0] + ".xlsx";
+        XLSX.writeFile(wb, fileName);
       });
     }
 
