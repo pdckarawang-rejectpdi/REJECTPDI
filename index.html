@@ -101,9 +101,8 @@
 <body class="p-3 md:p-6">
 
   <!-- LAYAR LOADING HITAM (PRELOADER SCREEN WITH ANIMATED PROGRESS BAR) -->
-  <div id="preloader" class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#070a12] transition-opacity duration-500">
+  <div id="preloader" class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#070a12] transition-opacity duration-300">
     <div class="text-center max-w-xs w-full px-6 space-y-6">
-      <!-- Logo Branding JKIND -->
       <div class="inline-flex items-center justify-center px-8 py-3 rounded-2xl bg-teal-500/10 border border-teal-500/30 shadow-[0_0_25px_rgba(0,255,170,0.2)] animate-pulse">
         <span class="text-3xl font-black italic tracking-widest text-emerald-400 drop-shadow-[0_0_12px_rgba(0,255,170,0.5)]">JKIND</span>
       </div>
@@ -113,14 +112,13 @@
         <p id="preloaderStatusText" class="text-xs text-gray-400 mt-1 font-mono">Memuat Sistem Inspection...</p>
       </div>
 
-      <!-- Animated Progress Bar -->
       <div class="w-full space-y-2">
         <div class="w-full h-2.5 bg-slate-900 rounded-full p-0.5 border border-teal-500/30 overflow-hidden shadow-[0_0_10px_rgba(0,0,0,0.5)]">
-          <div id="preloaderProgressBar" class="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-300 shadow-[0_0_12px_rgba(0,255,170,0.8)]" style="width: 5%;"></div>
+          <div id="preloaderProgressBar" class="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-200 shadow-[0_0_12px_rgba(0,255,170,0.8)]" style="width: 15%;"></div>
         </div>
         <div class="flex justify-between items-center text-[10px] text-gray-400 font-mono">
-          <span>LOADING SYSTEM</span>
-          <span id="preloaderPercentage" class="text-emerald-400 font-bold">5%</span>
+          <span>FAST ENGINE ACTIVE</span>
+          <span id="preloaderPercentage" class="text-emerald-400 font-bold">15%</span>
         </div>
       </div>
     </div>
@@ -168,7 +166,7 @@
       </div>
       <div>
         <h1 class="text-lg font-bold text-white tracking-wide flex items-center gap-2">
-          REJECT PDI <span class="text-xs px-2 py-0.5 rounded bg-teal-500/20 text-emerald-300 border border-teal-500/30">GLASS</span>
+          REJECT PDI <span class="text-xs px-2 py-0.5 rounded bg-teal-500/20 text-emerald-300 border border-teal-500/30">GLASS FILM</span>
         </h1>
         <p class="text-xs text-gray-400">Pre-Delivery Inspection Control System</p>
       </div>
@@ -284,81 +282,114 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-              Jenis Mobil <span class="text-rose-500">*</span>
-            </label>
-            <select id="jenisMobil" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
-              <option value="">-- Pilih Jenis Mobil --</option>
-              <option value="Agya">Agya</option>
-              <option value="Calya">Calya</option>
-              <option value="Raize">Raize</option>
-              <option value="New Yaris">New Yaris</option>
-              <option value="Yariscross">Yariscross</option>
-              <option value="Avanza">Avanza</option>
-              <option value="Veloz">Veloz</option>
-              <option value="Innova Reborn">Innova Reborn</option>
-              <option value="Innova Zenix">Innova Zenix</option>
-              <option value="Fortuner">Fortuner</option>
-              <option value="bZ4X">bZ4X</option>
-              <option value="Rush">Rush</option>
-            </select>
-          </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+            Jenis Mobil <span class="text-rose-500">*</span>
+          </label>
+          <select id="jenisMobil" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+            <option value="">-- Pilih Jenis Mobil --</option>
+            <option value="Agya">Agya</option>
+            <option value="Calya">Calya</option>
+            <option value="Raize">Raize</option>
+            <option value="New Yaris">New Yaris</option>
+            <option value="Yariscross">Yariscross</option>
+            <option value="Avanza">Avanza</option>
+            <option value="Veloz">Veloz</option>
+            <option value="Innova Reborn">Innova Reborn</option>
+            <option value="Innova Zenix">Innova Zenix</option>
+            <option value="Fortuner">Fortuner</option>
+            <option value="bZ4X">bZ4X</option>
+            <option value="Rush">Rush</option>
+          </select>
+        </div>
 
-          <div>
-            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-              Klaim Kaca <span class="text-rose-500">*</span>
+        <!-- KLAIM KACA (MULTI CHECKBOXES) -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+            Klaim Kaca (Bisa pilih lebih dari 1) <span class="text-rose-500">*</span>
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-slate-900/50 p-3 rounded-xl border border-gray-800 max-h-48 overflow-y-auto">
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimKaca" value="FD" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> FD (Windshield Front)
             </label>
-            <select id="klaimKaca" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
-              <option value="">-- Pilih Posisi Kaca --</option>
-              <option value="FD">FD (Windshield Front)</option>
-              <option value="Depan Kanan">Depan Kanan</option>
-              <option value="Depan Kiri">Depan Kiri</option>
-              <option value="Tengah Kanan">Tengah Kanan</option>
-              <option value="Tengah Kiri">Tengah Kiri</option>
-              <option value="Segitiga Kanan">Segitiga Kanan</option>
-              <option value="Segitiga Kiri">Segitiga Kiri</option>
-              <option value="Quarter Kanan">Quarter Kanan</option>
-              <option value="Quarter Kiri">Quarter Kiri</option>
-              <option value="Backdoor">Backdoor</option>
-            </select>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimKaca" value="Depan Kanan" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Depan Kanan
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimKaca" value="Depan Kiri" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Depan Kiri
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimKaca" value="Tengah Kanan" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Tengah Kanan
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimKaca" value="Tengah Kiri" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Tengah Kiri
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimKaca" value="Segitiga Kanan" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Segitiga Kanan
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimKaca" value="Segitiga Kiri" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Segitiga Kiri
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimKaca" value="Quarter Kanan" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Quarter Kanan
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimKaca" value="Quarter Kiri" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Quarter Kiri
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimKaca" value="Backdoor" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Backdoor
+            </label>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-              Klaim Reject <span class="text-rose-500">*</span>
+        <!-- KLAIM REJECT (MULTI CHECKBOXES) -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+            Klaim Reject (Bisa pilih lebih dari 1) <span class="text-rose-500">*</span>
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-slate-900/50 p-3 rounded-xl border border-gray-800 max-h-48 overflow-y-auto">
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimReject" value="Patah" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Patah
             </label>
-            <select id="klaimReject" onchange="toggleKlaimRejectLainnya()" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
-              <option value="">-- Pilih Jenis Cacat Reject --</option>
-              <option value="Patah">Patah</option>
-              <option value="Bintik">Bintik</option>
-              <option value="Cacing">Cacing</option>
-              <option value="Renyek">Renyek</option>
-              <option value="Kelupas">Kelupas</option>
-              <option value="Sisa Air/Bubble">Sisa Air/Bubble</option>
-              <option value="Gelembung">Gelembung</option>
-              <option value="Bolong/Ngongkong">Bolong/Ngongkong</option>
-              <option value="Lainnya">Lainnya</option>
-            </select>
-
-            <div id="containerKlaimRejectLainnya" class="hidden mt-3">
-              <input type="text" id="klaimRejectLainnya" placeholder="Tuliskan jenis reject lainnya (Manual)..." class="w-full px-4 py-3 rounded-xl input-dark text-sm border-amber-500/50">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-              Action <span class="text-rose-500">*</span>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimReject" value="Bintik" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Bintik
             </label>
-            <select id="action" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
-              <option value="">-- Pilih Tindakan --</option>
-              <option value="Repair">Repair</option>
-              <option value="Ganti">Ganti</option>
-            </select>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimReject" value="Cacing" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Cacing
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimReject" value="Renyek" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Renyek
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimReject" value="Kelupas" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Kelupas
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimReject" value="Sisa Air/Bubble" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Sisa Air/Bubble
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimReject" value="Gelembung" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Gelembung
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimReject" value="Bolong/Ngongkong" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Bolong/Ngongkong
+            </label>
+            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer p-1.5 hover:bg-slate-800/80 rounded">
+              <input type="checkbox" name="klaimReject" value="Lainnya" onchange="toggleKlaimRejectLainnyaCheckbox(this)" class="rounded border-gray-700 bg-slate-800 text-teal-400 focus:ring-teal-500"> Lainnya
+            </label>
           </div>
+          <div id="containerKlaimRejectLainnya" class="hidden mt-3">
+            <input type="text" id="klaimRejectLainnya" placeholder="Tuliskan jenis reject lainnya (Manual)..." class="w-full px-4 py-3 rounded-xl input-dark text-sm border-amber-500/50">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+            Action <span class="text-rose-500">*</span>
+          </label>
+          <select id="action" required class="w-full px-4 py-3 rounded-xl input-dark text-sm">
+            <option value="">-- Pilih Tindakan --</option>
+            <option value="Repair">Repair</option>
+            <option value="Ganti">Ganti</option>
+          </select>
         </div>
 
         <div class="pt-4">
@@ -628,12 +659,12 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT FRONTEND LOGIC -->
+  <!-- JAVASCRIPT FRONTEND LOGIC (HIGH PERFORMANCE OPTIMIZED) -->
   <script>
     // =========================================================================
     // TEMPELKAN URL DEPLOYMENT WEB APP GOOGLE APPS SCRIPT PADA BARIS DI BAWAH
     // =========================================================================
-    var DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycby29pgX1ylV7cgS7BjlxPYyHDquIL2HiWB8D75UzHniILqb0n1tsTqwCYjGL2lQEb8bJw/exec";
+    var DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbydtJdiCWWtl5Hkw0GZolH8B06Ruz-I-u1l42BFwdR5haObcgyhtoObk_H6TV9R3wVwgg/exec";
 
     var currentUser = { mpName: '', shift: '' };
     var currentPage = 1;
@@ -642,7 +673,6 @@
     var html5QrcodeScanner = null;
     var customConfirmCallback = null;
 
-    // PRELOADER PROGRESS BAR ANIMATION HELPER
     function updatePreloader(percentage, statusText) {
       var pBar = document.getElementById('preloaderProgressBar');
       var pText = document.getElementById('preloaderPercentage');
@@ -657,9 +687,9 @@
           var loader = document.getElementById('preloader');
           if (loader) {
             loader.style.opacity = '0';
-            setTimeout(function() { loader.style.display = 'none'; }, 500);
+            setTimeout(function() { loader.style.display = 'none'; }, 300);
           }
-        }, 300);
+        }, 200);
       }
     }
 
@@ -756,8 +786,9 @@
     }
 
     window.addEventListener('DOMContentLoaded', function() {
-      updatePreloader(25, 'Memuat Preferensi Sistem...');
+      updatePreloader(30, 'Memuat Cache Lokal Instan...');
       setDefaultDateAndTime();
+      loadCachedData(); // Render instan dari cache sebelum fetch server
       checkLoginSession();
     });
 
@@ -785,13 +816,13 @@
         try {
           currentUser = JSON.parse(savedSession);
           if (currentUser.mpName && currentUser.shift) {
-            updatePreloader(50, 'Membuat Sesi Pengguna...');
+            updatePreloader(60, 'Memulihkan Sesi Pengguna...');
             applySessionToUI();
             return;
           }
         } catch (e) {}
       }
-      updatePreloader(100, 'Menunggu Autentikasi Pengguna...');
+      updatePreloader(100, 'Autentikasi Diperlukan');
       showLoginModal();
     }
 
@@ -812,7 +843,7 @@
       currentUser = { mpName: mpName, shift: shift };
       localStorage.setItem('pdi_user_session', JSON.stringify(currentUser));
       
-      updatePreloader(20, 'Memulai Sesi PDI Baru...');
+      updatePreloader(20, 'Memulai Sesi PDI...');
       document.getElementById('preloader').style.display = 'flex';
       document.getElementById('preloader').style.opacity = '1';
 
@@ -828,16 +859,19 @@
       document.getElementById('userProfileBar').classList.remove('hidden');
       document.getElementById('loginModal').classList.add('hidden');
 
-      loadCachedData();
-      updatePreloader(75, 'Menghubungkan ke Database Google Sheets...');
+      updatePreloader(85, 'Sinkronisasi Cloud Sheets...');
       loadInitialAppData();
     }
 
     function loadCachedData() {
       var cachedHistory = localStorage.getItem('pdi_cache_history');
       var cachedStats = localStorage.getItem('pdi_cache_stats');
-      if (cachedHistory) renderHistoryTable(JSON.parse(cachedHistory));
-      if (cachedStats) renderDashboard(JSON.parse(cachedStats));
+      if (cachedHistory) {
+        try { renderHistoryTable(JSON.parse(cachedHistory)); } catch(e) {}
+      }
+      if (cachedStats) {
+        try { renderDashboard(JSON.parse(cachedStats)); } catch(e) {}
+      }
     }
 
     function loadInitialAppData() {
@@ -860,9 +894,9 @@
             localStorage.setItem('pdi_cache_stats', JSON.stringify(res.stats));
           }
         }
-        updatePreloader(100, 'Sistem Siap Digunakan');
+        updatePreloader(100, 'Sistem Siap');
       }, function() {
-        updatePreloader(100, 'Offline / Cache Mode');
+        updatePreloader(100, 'Offline Mode (Cached)');
       });
     }
 
@@ -875,12 +909,11 @@
       });
     }
 
-    function toggleKlaimRejectLainnya() {
-      var val = document.getElementById('klaimReject').value;
+    function toggleKlaimRejectLainnyaCheckbox(checkbox) {
       var container = document.getElementById('containerKlaimRejectLainnya');
       var inputLainnya = document.getElementById('klaimRejectLainnya');
 
-      if (val === 'Lainnya') {
+      if (checkbox.checked) {
         container.classList.remove('hidden');
         inputLainnya.required = true;
         inputLainnya.focus();
@@ -915,17 +948,36 @@
       e.preventDefault();
       var btnSubmit = document.getElementById('btnSubmitForm');
       
-      var klaimRejectVal = document.getElementById('klaimReject').value;
-      if (klaimRejectVal === 'Lainnya') {
-        klaimRejectVal = document.getElementById('klaimRejectLainnya').value.trim();
-        if (!klaimRejectVal) {
-          showCustomAlert('FORM BELUM LENGKAP', 'Harap isi jenis reject lainnya secara manual!', 'warning');
-          return;
+      var kacaCheckboxes = document.querySelectorAll('input[name="klaimKaca"]:checked');
+      var kacaArr = [];
+      for (var k = 0; k < kacaCheckboxes.length; k++) {
+        kacaArr.push(kacaCheckboxes[k].value);
+      }
+      if (kacaArr.length === 0) {
+        showCustomAlert('FORM BELUM LENGKAP', 'Harap pilih minimal 1 posisi klaim kaca!', 'warning');
+        return;
+      }
+      var klaimKacaVal = kacaArr.join(', ');
+
+      var rejectCheckboxes = document.querySelectorAll('input[name="klaimReject"]:checked');
+      var rejectArr = [];
+      for (var r = 0; r < rejectCheckboxes.length; r++) {
+        var val = rejectCheckboxes[r].value;
+        if (val === 'Lainnya') {
+          var lainnyaVal = document.getElementById('klaimRejectLainnya').value.trim();
+          if (lainnyaVal) rejectArr.push(lainnyaVal);
+        } else {
+          rejectArr.push(val);
         }
       }
+      if (rejectArr.length === 0) {
+        showCustomAlert('FORM BELUM LENGKAP', 'Harap pilih minimal 1 jenis klaim reject!', 'warning');
+        return;
+      }
+      var klaimRejectVal = rejectArr.join(', ');
 
       btnSubmit.disabled = true;
-      btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SIMPANNING DATA...';
+      btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> MENYIMPAN DATA...';
 
       var payload = {
         mpName: currentUser.mpName,
@@ -936,7 +988,7 @@
         team: document.getElementById('team').value,
         noRangka: document.getElementById('noRangka').value.trim().toUpperCase(),
         jenisMobil: document.getElementById('jenisMobil').value,
-        klaimKaca: document.getElementById('klaimKaca').value,
+        klaimKaca: klaimKacaVal,
         klaimReject: klaimRejectVal,
         action: document.getElementById('action').value
       };
@@ -952,11 +1004,12 @@
           document.getElementById('team').value = '';
           document.getElementById('noRangka').value = '';
           document.getElementById('jenisMobil').value = '';
-          document.getElementById('klaimKaca').value = '';
-          document.getElementById('klaimReject').value = '';
+          document.getElementById('action').value = '';
+          
+          var allCbs = document.querySelectorAll('input[name="klaimKaca"], input[name="klaimReject"]');
+          for (var c = 0; c < allCbs.length; c++) { allCbs[c].checked = false; }
           document.getElementById('klaimRejectLainnya').value = '';
           document.getElementById('containerKlaimRejectLainnya').classList.add('hidden');
-          document.getElementById('action').value = '';
           
           setDefaultDateAndTime();
           loadInitialAppData();
@@ -975,7 +1028,7 @@
       
       if (typeof Html5Qrcode !== 'undefined') {
         html5QrcodeScanner = new Html5Qrcode("reader");
-        var config = { fps: 10, qrbox: { width: 250, height: 150 } };
+        var config = { fps: 15, qrbox: { width: 250, height: 150 } };
         
         html5QrcodeScanner.start(
           { facingMode: "environment" },
@@ -1014,7 +1067,7 @@
 
     function debounceSearch() {
       clearTimeout(searchTimer);
-      searchTimer = setTimeout(function() { loadHistoryData(1); }, 350);
+      searchTimer = setTimeout(function() { loadHistoryData(1); }, 250); // Dioptimalkan lebih responsif
     }
 
     function loadHistoryData(page) {
@@ -1050,28 +1103,30 @@
       document.getElementById('btnPrevPage').disabled = (res.page <= 1);
       document.getElementById('btnNextPage').disabled = (res.page >= totalPages);
 
-      var html = '';
+      var htmlArray = [];
       for (var i = 0; i < res.items.length; i++) {
         var item = res.items[i];
         var actionClass = (item.action === 'Ganti') ? 'badge-ganti' : 'badge-repair';
         
-        html += '<tr class="hover:bg-slate-800/50 transition-colors">';
-        html += '<td class="p-3 font-mono text-emerald-400 font-semibold text-xs">' + escapeHtml(item.id) + '</td>';
-        html += '<td class="p-3 text-xs text-gray-300">' + escapeHtml(item.tanggal) + ' <span class="text-gray-500 block text-[10px]">' + escapeHtml(item.waktu) + '</span></td>';
-        html += '<td class="p-3 text-xs text-gray-200">' + escapeHtml(item.mpName) + '</td>';
-        html += '<td class="p-3 text-xs"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-teal-300 border border-teal-500/30">' + escapeHtml(item.shift) + '</span></td>';
-        html += '<td class="p-3 text-xs text-gray-300 font-medium">' + escapeHtml(item.namaQc) + '</td>';
-        html += '<td class="p-3 text-xs text-gray-400">' + escapeHtml(item.tanggalPemasangan) + ' <span class="text-gray-500 block text-[10px]">' + escapeHtml(item.jamPemasangan) + '</span></td>';
-        html += '<td class="p-3 text-xs"><span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Team ' + escapeHtml(item.team) + '</span></td>';
-        html += '<td class="p-3 font-mono text-xs text-white font-medium">' + escapeHtml(item.noRangka) + '</td>';
-        html += '<td class="p-3 text-xs text-gray-300">' + escapeHtml(item.jenisMobil) + '</td>';
-        html += '<td class="p-3 text-xs text-amber-300 font-medium">' + escapeHtml(item.klaimKaca) + '</td>';
-        html += '<td class="p-3 text-xs text-rose-300 font-medium">' + escapeHtml(item.klaimReject) + '</td>';
-        html += '<td class="p-3 text-xs"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold ' + actionClass + '">' + escapeHtml(item.action) + '</span></td>';
-        html += '</tr>';
+        htmlArray.push(
+          '<tr class="hover:bg-slate-800/50 transition-colors">' +
+          '<td class="p-3 font-mono text-emerald-400 font-semibold text-xs">' + escapeHtml(item.id) + '</td>' +
+          '<td class="p-3 text-xs text-gray-300">' + escapeHtml(item.tanggal) + ' <span class="text-gray-500 block text-[10px]">' + escapeHtml(item.waktu) + '</span></td>' +
+          '<td class="p-3 text-xs text-gray-200">' + escapeHtml(item.mpName) + '</td>' +
+          '<td class="p-3 text-xs"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-teal-300 border border-teal-500/30">' + escapeHtml(item.shift) + '</span></td>' +
+          '<td class="p-3 text-xs text-gray-300 font-medium">' + escapeHtml(item.namaQc) + '</td>' +
+          '<td class="p-3 text-xs text-gray-400">' + escapeHtml(item.tanggalPemasangan) + ' <span class="text-gray-500 block text-[10px]">' + escapeHtml(item.jamPemasangan) + '</span></td>' +
+          '<td class="p-3 text-xs"><span class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Team ' + escapeHtml(item.team) + '</span></td>' +
+          '<td class="p-3 font-mono text-xs text-white font-medium">' + escapeHtml(item.noRangka) + '</td>' +
+          '<td class="p-3 text-xs text-gray-300">' + escapeHtml(item.jenisMobil) + '</td>' +
+          '<td class="p-3 text-xs text-amber-300 font-medium">' + escapeHtml(item.klaimKaca) + '</td>' +
+          '<td class="p-3 text-xs text-rose-300 font-medium">' + escapeHtml(item.klaimReject) + '</td>' +
+          '<td class="p-3 text-xs"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold ' + actionClass + '">' + escapeHtml(item.action) + '</span></td>' +
+          '</tr>'
+        );
       }
 
-      tbody.innerHTML = html;
+      tbody.innerHTML = htmlArray.join('');
     }
 
     function changePage(delta) {
@@ -1117,18 +1172,20 @@
         kacaContainer.innerHTML = '<p class="text-xs text-gray-500 italic">Belum ada data reject kaca.</p>';
       } else {
         var maxCount = data.topKlaimKaca[0].count || 1;
-        var htmlKaca = '';
+        var htmlKacaArray = [];
         for (var i = 0; i < data.topKlaimKaca.length; i++) {
           var item = data.topKlaimKaca[i];
           var pct = Math.round((item.count / maxCount) * 100);
           
-          htmlKaca += '<div><div class="flex justify-between text-xs mb-1">';
-          htmlKaca += '<span class="font-semibold text-gray-200">#' + (i+1) + ' ' + escapeHtml(item.name) + '</span>';
-          htmlKaca += '<span class="text-emerald-400 font-bold">' + item.count + ' Units</span></div>';
-          htmlKaca += '<div class="w-full h-2 rounded-full bg-gray-800 overflow-hidden">';
-          htmlKaca += '<div class="h-full bg-emerald-400 rounded-full" style="width: ' + pct + '%"></div></div></div>';
+          htmlKacaArray.push(
+            '<div><div class="flex justify-between text-xs mb-1">' +
+            '<span class="font-semibold text-gray-200">#' + (i+1) + ' ' + escapeHtml(item.name) + '</span>' +
+            '<span class="text-emerald-400 font-bold">' + item.count + ' Units</span></div>' +
+            '<div class="w-full h-2 rounded-full bg-gray-800 overflow-hidden">' +
+            '<div class="h-full bg-emerald-400 rounded-full" style="width: ' + pct + '%"></div></div></div>'
+          );
         }
-        kacaContainer.innerHTML = htmlKaca;
+        kacaContainer.innerHTML = htmlKacaArray.join('');
       }
 
       var shiftContainer = document.getElementById('shiftStatsContainer');
@@ -1137,16 +1194,18 @@
       if (!data.shiftStats || data.shiftStats.length === 0) {
         shiftContainer.innerHTML = '<p class="text-xs text-gray-500 italic">Belum ada data shift hari ini.</p>';
       } else {
-        var htmlShift = '';
+        var htmlShiftArray = [];
         for (var j = 0; j < data.shiftStats.length; j++) {
           var s = data.shiftStats[j];
-          htmlShift += '<div><div class="flex justify-between text-xs mb-1">';
-          htmlShift += '<span class="font-semibold text-gray-200">' + escapeHtml(s.shift) + '</span>';
-          htmlShift += '<span class="text-teal-300 font-bold">' + s.count + ' (' + s.percentage + '%)</span></div>';
-          htmlShift += '<div class="w-full h-2 rounded-full bg-gray-800 overflow-hidden">';
-          htmlShift += '<div class="h-full bg-teal-400 rounded-full" style="width: ' + s.percentage + '%"></div></div></div>';
+          htmlShiftArray.push(
+            '<div><div class="flex justify-between text-xs mb-1">' +
+            '<span class="font-semibold text-gray-200">' + escapeHtml(s.shift) + '</span>' +
+            '<span class="text-teal-300 font-bold">' + s.count + ' (' + s.percentage + '%)</span></div>' +
+            '<div class="w-full h-2 rounded-full bg-gray-800 overflow-hidden">' +
+            '<div class="h-full bg-teal-400 rounded-full" style="width: ' + s.percentage + '%"></div></div></div>'
+          );
         }
-        shiftContainer.innerHTML = htmlShift;
+        shiftContainer.innerHTML = htmlShiftArray.join('');
       }
     }
 
@@ -1203,26 +1262,28 @@
         printBody.innerHTML = '';
         document.getElementById('printReportMeta').textContent = 'Tanggal Cetak: ' + new Date().toLocaleString('id-ID');
 
-        var html = '';
+        var htmlArray = [];
         for (var i = 0; i < res.items.length; i++) {
           var item = res.items[i];
-          html += '<tr>';
-          html += '<td>' + (i + 1) + '</td>';
-          html += '<td>' + escapeHtml(item.id) + '</td>';
-          html += '<td>' + escapeHtml(item.tanggal) + ' ' + escapeHtml(item.waktu) + '</td>';
-          html += '<td>' + escapeHtml(item.mpName) + '</td>';
-          html += '<td>' + escapeHtml(item.shift) + '</td>';
-          html += '<td>' + escapeHtml(item.namaQc) + '</td>';
-          html += '<td>' + escapeHtml(item.tanggalPemasangan) + ' ' + escapeHtml(item.jamPemasangan) + '</td>';
-          html += '<td>' + escapeHtml(item.team) + '</td>';
-          html += '<td>' + escapeHtml(item.noRangka) + '</td>';
-          html += '<td>' + escapeHtml(item.jenisMobil) + '</td>';
-          html += '<td>' + escapeHtml(item.klaimKaca) + '</td>';
-          html += '<td>' + escapeHtml(item.klaimReject) + '</td>';
-          html += '<td>' + escapeHtml(item.action) + '</td>';
-          html += '</tr>';
+          htmlArray.push(
+            '<tr>' +
+            '<td>' + (i + 1) + '</td>' +
+            '<td>' + escapeHtml(item.id) + '</td>' +
+            '<td>' + escapeHtml(item.tanggal) + ' ' + escapeHtml(item.waktu) + '</td>' +
+            '<td>' + escapeHtml(item.mpName) + '</td>' +
+            '<td>' + escapeHtml(item.shift) + '</td>' +
+            '<td>' + escapeHtml(item.namaQc) + '</td>' +
+            '<td>' + escapeHtml(item.tanggalPemasangan) + ' ' + escapeHtml(item.jamPemasangan) + '</td>' +
+            '<td>' + escapeHtml(item.team) + '</td>' +
+            '<td>' + escapeHtml(item.noRangka) + '</td>' +
+            '<td>' + escapeHtml(item.jenisMobil) + '</td>' +
+            '<td>' + escapeHtml(item.klaimKaca) + '</td>' +
+            '<td>' + escapeHtml(item.klaimReject) + '</td>' +
+            '<td>' + escapeHtml(item.action) + '</td>' +
+            '</tr>'
+          );
         }
-        printBody.innerHTML = html;
+        printBody.innerHTML = htmlArray.join('');
         window.print();
       });
     }
